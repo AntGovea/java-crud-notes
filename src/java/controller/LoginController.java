@@ -35,21 +35,21 @@ public class LoginController extends HttpServlet {
         String action = request.getParameter("action");
 
         if (action.equals("Registrar")) {
-            registerUser(request,response);
+            registerUser(request, response);
         } else {
-            loginUser();
+            loginUser(request, response);
         }
     }
 
-    public void registerUser(HttpServletRequest request,HttpServletResponse response) throws IOException {
-      
+    public void registerUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
         Persona p = new Persona();
         String apePaterno = request.getParameter("apePaterno");
         String apeMaterno = request.getParameter("apeMaterno");
         String nombre = request.getParameter("nombre");
         String direccion = request.getParameter("direccion");
         //aqui se pueden agregar validaciones de los campos, pero por el moemento se omitira ese paso
-        //ya que no es requerido en este ejercisio 
+        //ya que no es requerido en este ejercicio 
         try {
 
             Connection conn = cc.openConnection();
@@ -70,7 +70,7 @@ public class LoginController extends HttpServlet {
 
             if (rowsAfected == 0) {
                 cc.closeConnection(conn);
-                
+
             }
 
             ResultSet generatedKeys = stmt.getGeneratedKeys();
@@ -89,29 +89,45 @@ public class LoginController extends HttpServlet {
             u.setPersona(p);
 
             String sqlUsuario = "INSERT INTO usuarios(userType,userName,userPassword,idPersona) VALUES (?, ?, ?, ?);";
-           
-           stmt = conn.prepareStatement(sqlUsuario);
+
+            stmt = conn.prepareStatement(sqlUsuario);
             stmt.setInt(1, u.getUserType());
             stmt.setString(2, u.getUserName());
             stmt.setString(3, u.getUserPassword());
             stmt.setInt(4, p.getIdPersona());
-            
+
             rowsAfected = stmt.executeUpdate();
             if (rowsAfected == 0) {
                 cc.closeConnection(conn);
-                
+
             }
             response.sendRedirect("/crud-noticias/vistas/Login.jsp");
 
         } catch (SQLException ex) {
-           
+
             Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-    }
-
-    public void loginUser() {
 
     }
 
+    public void loginUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        try {
+
+            Connection conn = cc.openConnection();
+            //al guardar la contraseña en la base de datos es preferible encriptarla
+            //en este ejercicio no es obligatorio
+            String sql = "SELECT * FROM usuarios WHERE userName=? AND  userPassword=?;";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, request.getParameter("usuario"));
+            stmt.setString(2, request.getParameter("contrasena"));
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                response.sendRedirect("/crud-noticias/vistas/CapturaNoticias.jsp");
+            }
+
+        } catch (SQLException ex) {
+        }
+
+    }
 }

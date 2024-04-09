@@ -62,7 +62,7 @@
 
 <div class="login-container">
     <h2>Login</h2>
-    <form action="/crud-noticias/FormRegister" method="POST">
+    <form action="/crud-noticias/LoginController" method="POST">
         <div class="form-group">
             <label for="usuario">Usuario:</label>
             <input type="text" id="usuario" name="usuario" required>
@@ -72,7 +72,7 @@
             <input type="password" id="contrasena" name="contrasena" required>
         </div>
         <div class="form-group">
-            <input type="submit" value="Login" name="Login">
+            <input type="submit" value="Login" name="action"
         </div>
     </form>
 </div>

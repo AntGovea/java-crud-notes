@@ -10,11 +10,20 @@ package model;
  */
 public class Persona {
 
+    private int idPersona;
     private String apePaterno;
     private String apeMaterno;
     private String nombre;
     private String direccion;
     private long fechadeIngreso;
+
+    public int getIdPersona() {
+        return idPersona;
+    }
+
+    public void setIdPersona(int idPersona) {
+        this.idPersona = idPersona;
+    }
 
     public String getNombre() {
         return nombre;

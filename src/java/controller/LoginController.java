@@ -12,10 +12,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Persona;
+import model.Usuario;
 import util.Utilidades;
 
 /**
@@ -29,26 +31,18 @@ public class LoginController extends HttpServlet {
     Utilidades util = new Utilidades();
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        System.out.println("si entra al metodo");
 
-        String usuario = request.getParameter("usuario");
-        String contrasena = request.getParameter("contrasena");
         String action = request.getParameter("action");
-       
+
         if (action.equals("Registrar")) {
-            registerUser(request);
+            registerUser(request,response);
         } else {
             loginUser();
         }
-
-        System.out.println("usuario" + usuario);
-        long tiempoActualMillis = System.currentTimeMillis();
-
-        // Convertir los milisegundos a segundos (dividir por 1000)
     }
 
-    public boolean registerUser(HttpServletRequest request) {
-        boolean validation = false;
+    public void registerUser(HttpServletRequest request,HttpServletResponse response) throws IOException {
+      
         Persona p = new Persona();
         String apePaterno = request.getParameter("apePaterno");
         String apeMaterno = request.getParameter("apeMaterno");
@@ -65,12 +59,8 @@ public class LoginController extends HttpServlet {
             p.setNombre(nombre);
             p.setDireccion(direccion);
             p.setFechadeIngreso(util.getCurrentTimeStamp());
-
-            String sql = "INSERT INTO persona(apePaterno, apeMaterno, nombre, direccion, fechadeIngreso)VALUES(?,?,?,?,?);";
-
-            PreparedStatement stmt = conn.prepareStatement(sql);
-
-            stmt = conn.prepareStatement(sql);
+            String sqlPersona = "INSERT INTO personal(apePaterno, apeMaterno, nombre, direccion, fechadeIngreso)VALUES(?,?,?,?,?);";
+            PreparedStatement stmt = conn.prepareStatement(sqlPersona, PreparedStatement.RETURN_GENERATED_KEYS);
             stmt.setString(1, p.getApePaterno());
             stmt.setString(2, p.getApeMaterno());
             stmt.setString(3, p.getNombre());
@@ -78,16 +68,46 @@ public class LoginController extends HttpServlet {
             stmt.setLong(5, p.getFechadeIngreso());
             int rowsAfected = stmt.executeUpdate();
 
-            if (rowsAfected > 0) {
+            if (rowsAfected == 0) {
                 cc.closeConnection(conn);
-                validation = true;
-
+                
             }
 
+            ResultSet generatedKeys = stmt.getGeneratedKeys();
+
+            if (generatedKeys.next()) {
+                p.setIdPersona(generatedKeys.getInt(1));
+            }
+            //Insercion de usuario con la persona insertada previamente
+            //esto se puede hacer mediante una transaccion sqlPersona para prevenir errores de registro y tener un fujo controlado
+            //pero no es obligatorio en este ejercicio 
+            Usuario u = new Usuario();
+
+            u.setUserType(Integer.parseInt(request.getParameter("tipoUsuario")));
+            u.setUserPassword(request.getParameter("contrasena"));
+            u.setUserName(request.getParameter("usuario"));
+            u.setPersona(p);
+
+            String sqlUsuario = "INSERT INTO usuarios(userType,userName,userPassword,idPersona) VALUES (?, ?, ?, ?);";
+           
+           stmt = conn.prepareStatement(sqlUsuario);
+            stmt.setInt(1, u.getUserType());
+            stmt.setString(2, u.getUserName());
+            stmt.setString(3, u.getUserPassword());
+            stmt.setInt(4, p.getIdPersona());
+            
+            rowsAfected = stmt.executeUpdate();
+            if (rowsAfected == 0) {
+                cc.closeConnection(conn);
+                
+            }
+            response.sendRedirect("/crud-noticias/vistas/Login.jsp");
+
         } catch (SQLException ex) {
+           
             Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return validation;
+        
     }
 
     public void loginUser() {

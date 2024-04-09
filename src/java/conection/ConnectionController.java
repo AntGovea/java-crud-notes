@@ -17,7 +17,8 @@ public class ConnectionController {
     String user = "root";
     String password = "root";
     String port = "3306";
-    String database = "NotasCastores";
+    String database = "NotasCastores";//nombre de la base de datos  local adjunta en 
+    //la carpeta de documentacion de proyecto como Notas.sql
     String server = "localhost";
     String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
     String urlConnection = "jdbc:mysql://" + server + ":" + port + "/" + database;

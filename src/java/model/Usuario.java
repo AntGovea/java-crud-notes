@@ -11,8 +11,8 @@ package model;
 public class Usuario {
 
     private int userType;
-    private int userName;
-    private int userPassword;
+    private String userName;
+    private String userPassword;
     private Persona persona;
 
     public int getUserType() {
@@ -23,19 +23,19 @@ public class Usuario {
         this.userType = userType;
     }
 
-    public int getUserName() {
+    public String getUserName() {
         return userName;
     }
 
-    public void setUserName(int userName) {
+    public void setUserName(String userName) {
         this.userName = userName;
     }
 
-    public int getUserPassword() {
+    public String getUserPassword() {
         return userPassword;
     }
 
-    public void setUserPassword(int userPassword) {
+    public void setUserPassword(String userPassword) {
         this.userPassword = userPassword;
     }
 

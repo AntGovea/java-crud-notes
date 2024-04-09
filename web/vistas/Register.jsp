@@ -35,8 +35,8 @@
 
         <label for="tipoUsuario">Tipo de Usuario:</label>
         <select id="tipoUsuario" name="tipoUsuario" required>
-            <option value="interno">Interno</option>
-            <option value="externo">Externo</option>
+            <option value="1">Interno</option>
+            <option value="2">Externo</option>
         </select><br><br>
 
         <input type="submit" value="Registrar" name="action">

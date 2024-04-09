@@ -13,8 +13,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Persona;
@@ -36,13 +34,7 @@ public class LoginController extends HttpServlet {
         String usuario = request.getParameter("usuario");
         String contrasena = request.getParameter("contrasena");
         String action = request.getParameter("action");
-        System.out.println("Apellido Paterno: " + apePaterno);
-        System.out.println("Apellido Materno: " + apeMaterno);
-        System.out.println("Nombre: " + nombre);
-        System.out.println("Dirección: " + direccion);
-        System.out.println("Fecha de Ingreso: " + fechadeIngreso);
-        System.out.println("Usuario: " + usuario);
-        System.out.println("Contraseña: " + contrasena);
+       
         if (action.equals("Registrar")) {
             registerUser(request);
         } else {
@@ -87,6 +79,7 @@ public class LoginController extends HttpServlet {
             int rowsAfected = stmt.executeUpdate();
 
             if (rowsAfected > 0) {
+                cc.closeConnection(conn);
                 validation = true;
 
             }
